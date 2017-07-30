@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Перспектива</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+        <style>
+            body, html {
+                height: 100%;
+                font-family: "Inconsolata", sans-serif;
+                font-variant: small-caps;
+            }
+            .bgimg {
+                background-position: center;
+                background-size: cover;
+                background-image: url("https://s8.hostingkartinok.com/uploads/images/2017/03/8313d1665541c819063752ff10ba7c34.jpg");
+                min-height: 50%;
+            }
+            .menu {
+                display: none;
+            }
+        </style>
+        <script>
+		    function setSide(form){
+                var names = document.getElementsByTagName("side");
+		        if (form.f.value == "circle"){
+			        form.side2.disabled = 1;
+			        form.side1.disabled = 0;
+			        form.side1.required = 1;
+                    form.side2.placeholder = "";
+                    form.side1.placeholder = "Диаметр, мм";
+                    names[0].innerHTML = "Диаметр, мм";
+                    names[1].innerHTML = "";
+		        }
+		        else if (form.f.value == "square"){
+			        form.side2.disabled = 1;
+			        form.side1.disabled = 0;
+			        form.side1.required = 1;
+			        form.side1.placeholder = "Сторона, мм";
+			        form.side2.placeholder = "";
+                    names[0].innerHTML = "Сторона, мм";
+                    names[1].innerHTML = "";
+		        }
+		        else if (form.f.value == "rect"){
+			        form.side2.disabled = 0;
+			        form.side1.disabled = 0;
+		    	    form.side2.required = 1;
+			        form.side1.required = 1;
+	    		    form.side1.placeholder = "Сторона 1, мм";
+    			    form.side2.placeholder = "Сторона 2, мм";
+                    names[0].innerHTML = "Сторона 1, мм";
+                    names[1].innerHTML = "Сторона 2, мм";
+		        }
+		        else{
+			        form.side2.disabled = 1;
+			        form.side1.disabled = 1;
+                    form.side2.placeholder = "";
+                    form.side1.placeholder = "";
+		        }
+	    	}
+    		function get(form){
+                var po = Number(form.po.value);
+                if (!form.len.value || !form.thick.value || !form.side1.value){
+                    return;
+                }
+                var l = Number(form.len.value);
+                var s = Number(form.thick.value);
+                if (form.f.value == "circle"){
+                    var d = Number(form.side1.value);
+                    var weight = (Math.PI * po * (s / 1000) * ((d - s) / 1000) * l * 100) / 100;
+                    form.result.value = weight.toFixed(3);
+                }
+                else if (form.f.value == "square"){
+                    var a = Number(form.side1.value);
+                    var weight = ((po / 7850) * 0.0157 * s * (2 * a - 2.86 * s) * l * 100) / 100;
+                    form.result.value = weight.toFixed(3);
+                }
+                else{
+                    if (!form.side2.value){
+                        return;
+                    }
+                    var a = Number(form.side1.value);
+                    var b = Number(form.side2.value);
+                    var weight = ((po / 7850) * 0.0157 * s * (a + b - 2.86 * s) * l * 100) / 100;
+                    form.result.value = weight.toFixed(3);
+                }
+                form.result.value += " кг";
+		    }
+            function setPrice(form, type){
+                if (Number(form.result.value) == 0){
+                    return;
+                }
+                var tmp = form.result.value;
+                var i = 0;
+                var res = "";
+                while (tmp[i] != ' '){
+                    res += tmp[i];
+                    ++i;
+                }
+                var weight = Number(res);
+                var l = Number(form.len.value);
+                var meter_per_ton = l / weight * 1000;
+                if (type == 'ton')
+                    form.price_per_meter.value = (Number(form.price_per_ton.value) / meter_per_ton).toFixed(3);
+                else
+                    form.price_per_ton.value = (Number(form.price_per_meter.value) * meter_per_ton).toFixed(3);
+            }
+	    </script>
+    </head>
+    <body>
+
+        <!-- LINKS ON THE TOP -->
+        <div class = "w3-top">
+            <div class = "w3-row w3-padding w3-black">
+                <div class = "w3-col s3">
+                    <a href = "http://{{path}}/" class = "w3-button w3-block w3-black">Главная страница</a>
+                </div>
+                <div class = "w3-col s3">
+                    <a href = "http://{{path}}/calc/" class = "w3-button w3-block w3-black">Калькулятор</a>
+                </div>
+                <div class = "w3-col s3">
+                    <a href = "http://{{path}}/warehouse/" class = "w3-button w3-block w3-black">Склад</a>
+                </div>
+                <div class = "w3-col s3">
+                    <a href = "http://{{path}}/contact/" class = "w3-button w3-block w3-black">Контакты</a>
+                </div>
+            </div>
+        </div>
+	
+	<!-- NAME WITH IMAGE -->
+        <header class = "bgimg w3-display-container w3-grayscale-min" id = "home">
+            <div class = "w3-display-left w3-center">
+                <span class = "w3-text-white" style = "font-size:80px">Перспектива</span>
+            </div>
+        </header>
+	
+	<div class="w3-sand w3-grayscale w3-large">
+
+	<!-- CALCULATOR FORM -->
+	<div class="w3-container">
+		<div class="w3-content" style="max-width:700px">
+            <p><span class="w3-tag w3-wide">Калькулятор</span></p>
+            <p>Данный калькулятор вычисляет вес трубы исходя из ее параметров: материал, форма, размеры, толщина и длина.
+            Также можно рассчитать цену за 1 метр, указав цену за 1 тонну, и наоборот (вес 1 метра берется из калькулятора, как вес трубы / длина трубы).</p>
+		    <form onsubmit = "return false" class = "w3-center">
+                Материал
+                <select name = "po" required placeholder = "Материал">
+			        <option>Материал</option>
+                    <option value = "7850">Углеродистая сталь</option>
+    				<option value = "7900">04X18H10</option>
+	    			<option value = "7960">06XH28MДT</option>
+                    <option value = "7700">08X13</option>
+				    <option value = "7700">08X17T</option>
+    				<option value = "7700">08X20H14C2</option>
+                    <option value = "7900">08X18H10</option>
+		    		<option value = "7900">08X18H10T</option>
+			    	<option value = "7950">08X18H12T</option>	
+                    <option value = "8100">08X17H15M3T</option>
+	    			<option value = "7600">08X22H6T</option>
+		    		<option value = "7900">08X18H12Б</option>	
+                    <option value = "8000">10X17H13M2T</option>
+				    <option value = "7950">10X23H18</option>
+    				<option value = "7700">12X13</option>
+                    <option value = "7700">12X17</option>
+		    		<option value = "7950">12X18H10T</option>
+			    	<option value = "7900">12X18H12T</option>
+                    <option value = "7900">12X18H9</option>
+    				<option value = "7600">15X25T</option>
+	    			<option value = "7900">17X18H9</option>
+                    <option value = "2850">дюралюминий</option>
+			    	<option value = "4540">титан</option>
+				    <option value = "8960">медь</option>
+                    <option value = "8600">латунь</option>
+	    			<option value = "11340">свинец</option>
+                    <option value = "19300">золото</option>
+                </select><br><br>
+                Форма
+		        <select name = "f" required onChange = "setSide(this.form)" placeholder = "Форма">
+			        <option>Форма</option>
+    		        <option value = "circle">Круглая</option>
+	    			<option value = "square">Квадратная</option>
+                    <option value = "rect">Прямоугольная</option>
+                </select><br><br>
+                <side></side>
+                <input type = "number" step = "0.001" name = "side1" disabled><br><br>
+                <side></side>
+                <input type = "number" step = "0.001" name = "side2" disabled><br><br>
+                Толщина, мм
+                <input type = "number" step = "0.001" name = "thick" required placeholder = "Толщина, мм"><br><br>
+                Длина, мм
+                <input type = "number" name = "len" step = "0.001" required placeholder = "Длина, м"><br><br>
+                <input type = "submit" value = "Вычислить" onclick = "get(this.form)"><br><br>
+                Вес трубы, кг
+                <input type = "text" name = "result" value = "0.000"><br><br>
+                Цена за 1 тонну
+                <input type = "number" step = "0.001" name = "price_per_ton" oninput = "setPrice(this.form, 'ton')"><br><br>
+                Цена за 1 метр
+                <input type = "number" step = "0.001" name = "price_per_meter" oninput = "setPrice(this.form, 'meter')"><br><br>
+		    </form>
+		</div>
+	</div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="w3-center w3-light-grey w3-padding-48 w3-large">
+        <p><a href="http://xn--80adiapl6abiko.org/" title="W3.CSS" target="_blank" class="w3-hover-text-green">Перспектива</a></p>
+    </footer>
+    </body>
+</html>
